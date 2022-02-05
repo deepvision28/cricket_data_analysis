@@ -17,6 +17,10 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 pd.set_option('display.max_rows', 1000)
 df= pd.read_csv("/kaggle/input/ipl-complete-dataset-20082020/IPL Ball-by-Ball 2008-2020.csv")
 df_m = pd.read_csv("/kaggle/input/ipl-complete-dataset-20082020/IPL Matches 2008-2020.csv")
+
+merged_df = pd.merge(df, df_m, on="id")
+merged_df.columns
+
 df_inn1 = merged_df.loc[(merged_df["over"] < 6) & (merged_df["inning"] == 1)].groupby(['id',"date", "winner","inning", "batting_team"], as_index=False).agg({'batsman_runs': "sum"})
 df_inn1.rename(columns={'batting_team':'inn1_team','batsman_runs':'inn1_runs'}, inplace=True)
 
