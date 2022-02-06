@@ -31,11 +31,18 @@ df_inn2.rename(columns={'batting_team':'inn2_team','batsman_runs':'inn2_runs'}, 
 uber_pd = pd.merge(df_inn1, df_inn2, on="id")
 
 uber_pd['pp_winner']= np.where(uber_pd['inn1_runs']>uber_pd['inn2_runs'],uber_pd['inn1_team'],uber_pd['inn2_team'])
+uber_pd['pp_loser']= np.where(uber_pd['inn1_runs']>uber_pd['inn2_runs'],uber_pd['inn2_team'],uber_pd['inn1_team'])
 
 uber_pd['pp_boom']= np.where(uber_pd['pp_winner'] == uber_pd['winner_x'],1,0)
+uber_pd['pp_winner_batting_first']= np.where(uber_pd['pp_winner'] == uber_pd['inn1_team'],1,0)
+uber_pd['pp_winner_batting_second']= np.where(uber_pd['pp_winner'] == uber_pd['inn2_team'],1,0)
+uber_pd['pp_loser_batting_first']= np.where(uber_pd['pp_loser'] == uber_pd['inn1_team'],1,0)
+uber_pd['pp_loser_batting_second']= np.where(uber_pd['pp_loser'] == uber_pd['inn2_team'],1,0)
 
 uber_pd['pp_boom_batting_first'] = np.where((uber_pd['pp_winner'] == uber_pd['winner_x']) & (uber_pd['pp_winner'] == uber_pd['inn1_team']),1,0)
 uber_pd['pp_boom_batting_second'] = np.where((uber_pd['pp_winner'] == uber_pd['winner_x']) & (uber_pd['pp_winner'] == uber_pd['inn2_team']),1,0)
+uber_pd['pp_revboom_batting_first'] = np.where((uber_pd['pp_loser'] == uber_pd['winner_x']) & (uber_pd['pp_winner'] == uber_pd['inn1_team']),1,0)
+uber_pd['pp_revboom_batting_second'] = np.where((uber_pd['pp_loser'] == uber_pd['winner_x']) & (uber_pd['pp_winner'] == uber_pd['inn2_team']),1,0)
 
 uber_pd['pp_unboom_batting_first'] = np.where((uber_pd['pp_winner'] != uber_pd['winner_x']) & (uber_pd['pp_winner'] == uber_pd['inn1_team']),1,0)
 uber_pd['pp_unboom_batting_second'] = np.where((uber_pd['pp_winner'] != uber_pd['winner_x']) & (uber_pd['pp_winner'] == uber_pd['inn2_team']),1,0)
@@ -51,6 +58,8 @@ count_pp_boom_batting_second = uber_pd['pp_boom_batting_second'].sum()
 
 count_pp_unboom_batting_first = uber_pd['pp_unboom_batting_first'].sum()
 count_pp_unboom_batting_second = uber_pd['pp_unboom_batting_second'].sum()
+count_pp_winner_batting_first = uber_pd['pp_winner_batting_first'].sum()
+count_pp_winner_batting_second = uber_pd['pp_winner_batting_second'].sum()
 
 print("All IPL matches from 2008-2020")
 print("Powerplay wins : ", pp_superiority_count)
@@ -59,6 +68,8 @@ print('Powerplay champs winning match while batting first : ', count_pp_boom_bat
 print('Powerplay champs winning match while batting second : ', count_pp_boom_batting_second)
 print('Powerplay champs losing match while batting first : ', count_pp_unboom_batting_first)
 print('Powerplay champs losing match while batting second : ', count_pp_unboom_batting_second)
+print('Powerplay champs while batting first : ', count_pp_winner_batting_first)
+print('Powerplay champs while batting second : ', count_pp_winner_batting_second)
 
 y = np.array([pp_superiority_count, pp_failure_count])
 mylabels = ["PP Winners winning match", "PP winners losing match"]
@@ -66,6 +77,8 @@ myexplode = [0.05, 0.05]
 
 plt.pie(y, labels = mylabels, explode = myexplode)
 plt.show() 
+uber_pd['pp_revboom_batting_first'].value_counts()
+#uber_pd['pp_revboom_batting_second'].value_counts()
 
 #uber_pd.head()
 #uber_pd.to_csv('/kaggle/working/out2.csv')
